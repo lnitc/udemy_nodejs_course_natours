@@ -84,6 +84,42 @@ function deleteTour(req, res) {
   });
 }
 
+function getAllUsers(req, res) {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+}
+
+function getUser(req, res) {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+}
+
+function updateUser(req, res) {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+}
+
+function deleteUser(req, res) {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+}
+
+function createUser(req, res) {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+}
+
+//middleware
 app.use(morgan('dev'));
 
 app.use(express.json()); //middleware to be able to use req.body
@@ -109,6 +145,13 @@ app
   .get(getTour)
   .patch(updateTour)
   .delete(deleteTour);
+
+app.route('/api/v1/users').get(getAllUsers).post(createUser);
+app
+  .route('/api/v1/users/:id')
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}`);

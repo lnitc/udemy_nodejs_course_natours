@@ -18,6 +18,16 @@ function checkID(req, res, next, val) {
   next();
 }
 
+function checkBody(req, res, next) {
+  if (!('price' in req.body) || !('name' in req.body)) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Missing name or price',
+    });
+  }
+  next();
+}
+
 function getAllTours(req, res) {
   res.status(200).json({
     status: 'success',
@@ -33,7 +43,7 @@ function createTour(req, res) {
   const newTour = Object.assign({ id: newId }, req.body);
   tours.push(newTour);
   fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
+    `${__dirname}/../dev-data/data/tours-simple.json`,
     JSON.stringify(tours),
     (err) => {
       res.status(201).json({
@@ -80,4 +90,5 @@ module.exports = {
   updateTour,
   deleteTour,
   checkID,
+  checkBody,
 };

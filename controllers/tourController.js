@@ -8,6 +8,16 @@ function findTour(req, tours) {
   return tours.find((el) => el.id === id);
 }
 
+function checkID(req, res, next, val) {
+  if (req.params.id * 1 >= tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  next();
+}
+
 function getAllTours(req, res) {
   res.status(200).json({
     status: 'success',
@@ -39,12 +49,6 @@ function createTour(req, res) {
 
 function getTour(req, res) {
   const tour = findTour(req, tours);
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
   res.status(200).json({
     status: 'success',
     data: {
@@ -54,13 +58,6 @@ function getTour(req, res) {
 }
 
 function updateTour(req, res) {
-  const tour = findTour(req, tours);
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
   res.status(200).json({
     status: 'success',
     data: {
@@ -70,13 +67,6 @@ function updateTour(req, res) {
 }
 
 function deleteTour(req, res) {
-  const tour = findTour(req, tours);
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
   res.status(204).json({
     status: 'success',
     data: null,
@@ -89,4 +79,5 @@ module.exports = {
   getTour,
   updateTour,
   deleteTour,
+  checkID,
 };

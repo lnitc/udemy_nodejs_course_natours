@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const app = require('./app');
-
 dotenv.config({ path: './config.env' });
+const app = require('./app'); //import app after dotenv to be able to use morgan
 
 mongoose.connect(process.env.DATABASE).then((con) => {
   console.log('DB connection successful!', con.connections);

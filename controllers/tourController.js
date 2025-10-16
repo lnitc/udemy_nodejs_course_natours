@@ -2,7 +2,6 @@ const fs = require('fs');
 const Tour = require('./../models/tourModel');
 
 async function getAllTours(req, res) {
-  console.log(req.query);
   try {
     //BUILD QUERY
     //1) Filtering
@@ -43,6 +42,7 @@ async function getAllTours(req, res) {
       if (skip >= numTours) throw new Error('This page does not exist');
     }
 
+    //EXECUTE QUERY
     const tours = await query;
 
     res.status(200).json({
@@ -129,10 +129,28 @@ async function deleteTour(req, res) {
   }
 }
 
+function aliasTopTours(req, res, next) {
+  const query = {
+    limit: '5',
+    sort: '-ratingsAverage,price',
+    fields: 'name,price,ratingsAverage,summary,difficulty',
+  };
+
+  //query is immutable since express v5, so it's just a workaround for the course sake
+  Object.defineProperty(req, 'query', {
+    ...Object.getOwnPropertyDescriptor(req, 'query'),
+    writable: false,
+    value: query,
+  });
+
+  next();
+}
+
 module.exports = {
   getAllTours,
   createTour,
   getTour,
   updateTour,
   deleteTour,
+  aliasTopTours,
 };

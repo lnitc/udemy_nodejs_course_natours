@@ -56,7 +56,12 @@ const tourSchema = new mongoose.Schema(
     },
     startDates: [Date],
     slug: String,
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
+
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
@@ -73,10 +78,19 @@ tourSchema.pre('save', function (next) {
   next();
 });
 
-// tourSchema.post('save', function (doc, next) {
-//   console.log(doc);
-//   next();
-// });
+//QUERY MIDDLEWARE
+tourSchema.pre(/^find/, function (next) {
+  //regular expression to match all strings that start with find
+  this.find({ secretTour: { $ne: true } });
+  this.start = Date.now();
+  next();
+});
+
+tourSchema.post(/^find/, function (docs, next) {
+  console.log(`Query took ${Date.now() - this.start} milliseconds`);
+  console.log(docs);
+  next();
+});
 
 const Tour = mongoose.model('Tour', tourSchema);
 

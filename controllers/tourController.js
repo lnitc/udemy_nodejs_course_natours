@@ -1,6 +1,8 @@
 const Tour = require('./../models/tourModel');
 const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
+const AppError = require('./../utils/appError');
+const { default: mongoose } = require('mongoose');
 
 function getAllTours(req, res, next) {
   catchAsync(async () => {
@@ -36,6 +38,9 @@ function createTour(req, res, next) {
 function getTour(req, res, next) {
   catchAsync(async () => {
     const tour = await Tour.findById(req.params.id); //same as Tour.findOne({ _id: req.params.id })
+
+    if (!tour) return next(new AppError('No tour found with that ID', 404));
+
     res.status(200).json({
       status: 'success',
       data: {
@@ -51,6 +56,9 @@ function updateTour(req, res, next) {
       new: true,
       runValidators: true,
     });
+
+    if (!tour) return next(new AppError('No tour found with that ID', 404));
+
     res.status(200).json({
       status: 'success',
       data: {
@@ -62,7 +70,9 @@ function updateTour(req, res, next) {
 
 function deleteTour(req, res, next) {
   catchAsync(async () => {
-    await Tour.findByIdAndDelete(req.params.id);
+    const tour = await Tour.findByIdAndDelete(req.params.id);
+
+    if (!tour) return next(new AppError('No tour found with that ID', 404));
     res.status(204).json({
       status: 'success',
       data: null,
@@ -177,6 +187,12 @@ async function getMonthlyPlan(req, res, next) {
   })(req, res, next);
 }
 
+function checkID(req, res, next, val) {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id))
+    return next(new AppError('Invalid ID', 400));
+  next();
+}
+
 module.exports = {
   getAllTours,
   createTour,
@@ -186,4 +202,5 @@ module.exports = {
   aliasTopTours,
   getTourStats,
   getMonthlyPlan,
+  checkID,
 };

@@ -27,14 +27,15 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password cannot be empty'],
     trim: true,
     maxlentgh: [20, 'A password must have less then or equal 20 characters'],
-    minlength: [8, 'A password name must have more or equal then 8 characters'],
+    minlength: [8, 'A password must have more or equal then 8 characters'],
+    select: false,
   },
   passwordConfirm: {
     type: String,
     required: [true, 'Password confirm cannot be empty'],
     trim: true,
     maxlentgh: [20, 'A password must have less then or equal 20 characters'],
-    minlength: [8, 'A password name must have more or equal then 8 characters'],
+    minlength: [8, 'A password must have more or equal then 8 characters'],
     validate: {
       validator:
         //This only works on CREATE and SAVE
@@ -57,6 +58,13 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword,
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;

@@ -77,6 +77,18 @@ function updateMe(req, res, next) {
   })(req, res, next);
 }
 
+function deleteMe(req, res, next) {
+  catchAsync(async () => {
+    //in this implementation we do not actually delete the user from the DB,
+    //we simply set the active field to false
+    await User.findByIdAndUpdate(req.user.id, { active: false });
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  })(req, res, next);
+}
+
 module.exports = {
   getAllUsers,
   getUser,
@@ -84,4 +96,5 @@ module.exports = {
   deleteUser,
   createUser,
   updateMe,
+  deleteMe,
 };

@@ -18,7 +18,12 @@ class APIFeatures {
 
   sort() {
     if (this.queryString.sort) {
-      const sortBy = this.queryString.sort.split(',').join(' ');
+      //handle duplicate parameter cases
+      let sortBy = Array.isArray(this.queryString.sort)
+        ? this.queryString.sort
+        : this.queryString.sort.split(',');
+      sortBy = sortBy.join(' ');
+
       this.query = this.query.sort(sortBy);
     } else {
       this.query = this.query.sort('-createdAt');
@@ -28,7 +33,12 @@ class APIFeatures {
 
   limitFields() {
     if (this.queryString.fields) {
-      const fields = this.queryString.fields.split(',').join(' ');
+      //handle duplicate parameter cases
+      let fields = Array.isArray(this.queryString.fields)
+        ? this.queryString.fields
+        : this.queryString.fields.split(',');
+      fields = fields.join(' ');
+
       this.query = this.query.select(fields);
     } else {
       this.query = this.query.select('-__v'); //the minus excludes the field

@@ -11,6 +11,11 @@ function signToken(id) {
   });
 }
 
+function createSendToken(user, statusCode, res) {
+  const token = signToken(user._id);
+  res.status(statusCode).json({ status: 'success', token, data: { user } });
+}
+
 function signup(req, res, next) {
   catchAsync(async () => {
     //const user = await User.create(req.body); //this is a security breach because anyone can assign themselves an admin role
@@ -23,8 +28,7 @@ function signup(req, res, next) {
       passwordConfirm,
     });
 
-    const token = signToken(user._id);
-    res.status(201).json({ status: 'success', token, data: { user } });
+    createSendToken(user, 201, res);
   })(req, res, next);
 }
 
@@ -45,8 +49,7 @@ function login(req, res, next) {
     }
 
     //create and send token
-    const token = signToken(user._id);
-    res.status(200).json({ status: 'success', token });
+    createSendToken(user, 200, res);
   })(req, res, next);
 }
 
@@ -166,8 +169,30 @@ function resetPassword(req, res, next) {
 
     //update changedPasswordAt property for the user (imlemented as middleware)
     //log the user in, send jwt
-    const token = signToken(user._id);
-    res.status(200).json({ status: 'success', token });
+    createSendToken(user, 200, res);
+  })(req, res, next);
+}
+
+function updatePassword(req, res, next) {
+  catchAsync(async () => {
+    //get user from collection
+    //NB: we can't use findByIdAndUpdate because our pre-save middleware won't be run
+    const user = await User.findById(req.user.id).select('+password');
+
+    //check if POSTed current password is correct
+    if (
+      !(await user.correctPassword(req.body.passwordCurrent, user.password))
+    ) {
+      return next(new AppError('Your current password is wrong', 401));
+    }
+
+    //if so, update password
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+    await user.save();
+
+    //log user in, send JWT
+    createSendToken(user, 200, res);
   })(req, res, next);
 }
 
@@ -178,4 +203,5 @@ module.exports = {
   restrictTo,
   forgotPassword,
   resetPassword,
+  updatePassword,
 };

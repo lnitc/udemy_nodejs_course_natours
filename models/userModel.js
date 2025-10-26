@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -51,6 +52,8 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 userSchema.pre('save', async function (next) {
@@ -82,6 +85,23 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   }
   //false means password was not changed
   return false;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  //reset token is a kind of temporary password the user will use to reset their password
+  //NB: never store the reset token in the database in plain text
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  //we hash the reset token to make it unusable in case someone breaks into the database
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  console.log({ resetToken }, this.passwordResetToken);
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //10 minutes
+  return resetToken;
 };
 
 const User = mongoose.model('User', userSchema);

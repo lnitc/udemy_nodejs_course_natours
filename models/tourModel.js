@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
+const User = require('./userModel');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -105,6 +106,13 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
+    // guides: Array, //in case of embedding users in a tour
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
 
   {
@@ -123,11 +131,28 @@ tourSchema.pre('save', function (next) {
   next();
 });
 
+//example of embedding users in a tour
+//not recommended because if a user updates their data, all related tours will need to be updated
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// });
+
 //QUERY MIDDLEWARE
 tourSchema.pre(/^find/, function (next) {
   //regular expression to match all strings that start with find
   this.find({ secretTour: { $ne: true } });
   this.start = Date.now();
+  next();
+});
+
+tourSchema.pre(/^find/, function (next) {
+  //populate means replacing refs with actual data. It actually runs a separate query, so keep in mind the performance
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
   next();
 });
 

@@ -3,6 +3,7 @@ const Review = require('./../models/reviewModel');
 const Tour = require('./../models/tourModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
+const factory = require('./handlerFactory');
 
 function getAllReviews(req, res, next) {
   catchAsync(async () => {
@@ -41,7 +42,12 @@ function createReview(req, res, next) {
   })(req, res, next);
 }
 
+function deleteReview(req, res, next) {
+  factory.deleteOne(Review)(req, res, next);
+}
+
 module.exports = {
   getAllReviews,
   createReview,
+  deleteReview,
 };

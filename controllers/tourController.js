@@ -3,6 +3,7 @@ const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const mongoose = require('mongoose');
+const factory = require('./handlerFactory');
 
 function getAllTours(req, res, next) {
   catchAsync(async () => {
@@ -69,15 +70,7 @@ function updateTour(req, res, next) {
 }
 
 function deleteTour(req, res, next) {
-  catchAsync(async () => {
-    const tour = await Tour.findByIdAndDelete(req.params.id);
-
-    if (!tour) return next(new AppError('No tour found with that ID', 404));
-    res.status(204).json({
-      status: 'success',
-      data: null,
-    });
-  })(req, res, next);
+  factory.deleteOne(Tour)(req, res, next);
 }
 
 function aliasTopTours(req, res, next) {

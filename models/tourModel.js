@@ -114,7 +114,6 @@ const tourSchema = new mongoose.Schema(
       },
     ],
   },
-
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
@@ -123,6 +122,15 @@ const tourSchema = new mongoose.Schema(
 
 tourSchema.virtual('durationWeeks').get(function () {
   return (this.duration / 7).toFixed(1);
+});
+
+//virtual populate
+//keep children data on the parent document, without persisting it in the DB
+//connect 2 models on common field
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
 });
 
 //DOCUMENT MIDDLEWARE: runs before .save() and .create()

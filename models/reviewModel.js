@@ -32,12 +32,18 @@ const reviewSchema = new mongoose.Schema(
 );
 
 reviewSchema.pre(/^find/, function (next) {
+  // this.populate({
+  //   path: 'tour',
+  //   select: 'name', //not working, leave as is for now
+  // }).populate({
+  //   path: 'user',
+  //   select: 'name photo -_id',
+  // });
+
+  //tour population was turned off in the course to prevent excessive data
   this.populate({
-    path: 'tour',
-    select: 'name', //not working, leave as is for now
-  }).populate({
     path: 'user',
-    select: 'name photo -_id',
+    select: 'name photo',
   });
   next();
 });

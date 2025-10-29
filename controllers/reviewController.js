@@ -19,13 +19,15 @@ function getAllReviews(req, res, next) {
 
 function createReview(req, res, next) {
   catchAsync(async () => {
+    if (!req.body.tour) req.body.tour = req.params.tourId;
+
     if (!mongoose.Types.ObjectId.isValid(req.body.tour))
       return next(new AppError('Invalid ID', 400));
 
     const tour = await Tour.findById(req.body.tour);
     if (!tour) return next(new AppError('No tour found with that ID', 404));
 
-    req.body.user = req.user.id;
+    if (!req.body.user) req.body.user = req.user.id;
 
     const review = await Review.create(req.body);
 

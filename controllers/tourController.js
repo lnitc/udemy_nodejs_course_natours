@@ -2,7 +2,7 @@ const Tour = require('./../models/tourModel');
 const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
-const { default: mongoose } = require('mongoose');
+const mongoose = require('mongoose');
 
 function getAllTours(req, res, next) {
   catchAsync(async () => {

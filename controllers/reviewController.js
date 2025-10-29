@@ -6,7 +6,11 @@ const AppError = require('./../utils/appError');
 
 function getAllReviews(req, res, next) {
   catchAsync(async () => {
-    const reviews = await Review.find();
+    let filter = {};
+    if (req.params.id) filter = { tour: req.params.id };
+
+    const reviews = await Review.find(filter);
+
     res.status(200).json({
       status: 'success',
       results: reviews.length,
@@ -19,10 +23,7 @@ function getAllReviews(req, res, next) {
 
 function createReview(req, res, next) {
   catchAsync(async () => {
-    if (!req.body.tour) req.body.tour = req.params.tourId;
-
-    if (!mongoose.Types.ObjectId.isValid(req.body.tour))
-      return next(new AppError('Invalid ID', 400));
+    if (!req.body.tour) req.body.tour = req.params.id;
 
     const tour = await Tour.findById(req.body.tour);
     if (!tour) return next(new AppError('No tour found with that ID', 404));

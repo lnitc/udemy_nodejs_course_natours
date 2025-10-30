@@ -12,23 +12,11 @@ function filterObj(obj, ...allowedFields) {
 }
 
 function getAllUsers(req, res, next) {
-  catchAsync(async () => {
-    const users = await User.find();
-    res.status(200).json({
-      status: 'success',
-      results: users.length,
-      data: {
-        users,
-      },
-    });
-  })(req, res, next);
+  factory.getAll(User)(req, res, next);
 }
 
-function getUser(req, res) {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined',
-  });
+function getUser(req, res, next) {
+  factory.getOne(User)(req, res, next);
 }
 
 //NB:Do NOT update password with this logic
@@ -43,7 +31,7 @@ function deleteUser(req, res, next) {
 function createUser(req, res) {
   res.status(500).json({
     status: 'error',
-    message: 'This route is not yet defined',
+    message: 'This route is not defined! Please use /signup instead',
   });
 }
 

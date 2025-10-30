@@ -1,25 +1,8 @@
-const mongoose = require('mongoose');
 const Review = require('./../models/reviewModel');
-const Tour = require('./../models/tourModel');
-const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
 
 function getAllReviews(req, res, next) {
-  catchAsync(async () => {
-    let filter = {};
-    if (req.params.id) filter = { tour: req.params.id };
-
-    const reviews = await Review.find(filter);
-
-    res.status(200).json({
-      status: 'success',
-      results: reviews.length,
-      data: {
-        reviews,
-      },
-    });
-  })(req, res, next);
+  factory.getAll(Review)(req, res, next);
 }
 
 function setTourUserIds(req, res, next) {
@@ -40,10 +23,15 @@ function deleteReview(req, res, next) {
   factory.deleteOne(Review)(req, res, next);
 }
 
+function getReview(req, res, next) {
+  factory.getOne(Review)(req, res, next);
+}
+
 module.exports = {
   getAllReviews,
   createReview,
   deleteReview,
   updateReview,
   setTourUserIds,
+  getReview,
 };

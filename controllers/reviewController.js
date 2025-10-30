@@ -22,24 +22,18 @@ function getAllReviews(req, res, next) {
   })(req, res, next);
 }
 
+function setTourUserIds(req, res, next) {
+  if (!req.body.tour) req.body.tour = req.params.id;
+  if (!req.body.user) req.body.user = req.user.id;
+  next();
+}
+
 function createReview(req, res, next) {
-  catchAsync(async () => {
-    if (!req.body.tour) req.body.tour = req.params.id;
+  factory.createOne(Review)(req, res, next);
+}
 
-    const tour = await Tour.findById(req.body.tour);
-    if (!tour) return next(new AppError('No tour found with that ID', 404));
-
-    if (!req.body.user) req.body.user = req.user.id;
-
-    const review = await Review.create(req.body);
-
-    res.status(201).json({
-      status: 'success',
-      data: {
-        review,
-      },
-    });
-  })(req, res, next);
+function updateReview(req, res, next) {
+  factory.updateOne(Review)(req, res, next);
 }
 
 function deleteReview(req, res, next) {
@@ -50,4 +44,6 @@ module.exports = {
   getAllReviews,
   createReview,
   deleteReview,
+  updateReview,
+  setTourUserIds,
 };

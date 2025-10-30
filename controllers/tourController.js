@@ -25,15 +25,7 @@ function getAllTours(req, res, next) {
 }
 
 function createTour(req, res, next) {
-  catchAsync(async () => {
-    const newTour = await Tour.create(req.body);
-    res.status(201).json({
-      status: 'success',
-      data: {
-        tour: newTour,
-      },
-    });
-  })(req, res, next);
+  factory.createOne(Tour)(req, res, next);
 }
 
 function getTour(req, res, next) {

@@ -35,6 +35,11 @@ function createUser(req, res) {
   });
 }
 
+function getMe(req, res, next) {
+  req.params.id = req.user.id;
+  next();
+}
+
 function updateMe(req, res, next) {
   catchAsync(async () => {
     if (req.body.password || req.body.passwordConfirm) {
@@ -81,4 +86,5 @@ module.exports = {
   createUser,
   updateMe,
   deleteMe,
+  getMe,
 };

@@ -177,24 +177,13 @@ tourSchema.post(/^find/, function (docs, next) {
 });
 
 //AGGREGATION MIDDLEWARE
+/*
 tourSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   next();
 });
+*/
 
 const Tour = mongoose.model('Tour', tourSchema);
-
-// const testTour = new Tour({
-//   name: 'The Park Camper',
-//   rating: 4.7,
-//   price: 997,
-// });
-
-// testTour
-//   .save()
-//   .then((doc) => {
-//     console.log(doc);
-//   })
-//   .catch((err) => console.log('ERROR', err));
 
 module.exports = Tour;

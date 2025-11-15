@@ -82,7 +82,6 @@ function protect(req, res, next) {
 
     //verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    //console.log(decoded)
 
     //check if user still exists
     const currentUser = await User.findById(decoded.id);

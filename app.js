@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -14,6 +15,9 @@ const app = express();
 
 //express configuration
 app.set('query parser', 'extended'); //to parse query strings with square brackets
+
+//serving static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 //global middlewares
 //set security HTTP headers
@@ -51,13 +55,9 @@ app.use(function (req, res, next) {
   next();
 });
 
-//serving static files
-app.use(express.static(`${__dirname}/public`));
-
 //test middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  //console.log(req.headers);
   next();
 });
 
@@ -68,9 +68,6 @@ app.use('/api/v1/reviews', reviewRouter);
 
 //catch all
 app.all('/*path', (req, res, next) => {
-  // const err = new Error(`Can't find ${req.originalUrl} on this server!`); //custom error
-  // err.statusCode = 404;
-  // err.status = 'fail';
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404)); //the argument passed to next is assumed to be an error and the rest of the middleware is skipped
 });
 
